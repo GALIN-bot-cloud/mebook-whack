@@ -255,8 +255,8 @@ h1{font-weight:400; font-size:clamp(32px,4.6vw,48px); margin:0; letter-spacing:-
   const PER_LEVEL = 6;
   function cfg(lv) {
     return {
-      up: Math.max(300, 650 - (lv - 1) * 60),       // 나와 있는 시간(ms)
-      gap: Math.max(170, 820 - (lv - 1) * 85),        // 다음 등장까지 간격(ms)
+      up: Math.max(320, 650 - (lv - 1) * 45),       // 나와 있는 시간(ms)
+      gap: Math.max(200, 820 - (lv - 1) * 70),        // 다음 등장까지 간격(ms)
       simul: Math.min(5, 1 + Math.floor((lv - 1) / 2)), // 동시에 나오는 캐릭터 수
       bomb: Math.min(0.3, 0.06 + (lv - 1) * 0.04),     // 단독 폭탄 확률
       pair: Math.min(0.75, 0.2 + (lv - 1) * 0.08),     // 캐릭터와 폭탄이 동시에 튀어나올 확률
@@ -421,6 +421,17 @@ h1{font-weight:400; font-size:clamp(32px,4.6vw,48px); margin:0; letter-spacing:-
   $('editBtn').addEventListener('click', () => {
     $('overOv').classList.remove('show'); $('startOv').classList.add('show'); $('nameIn').focus();
   });
+  $('againBtn').addEventListener('click', startGame);
+  addEventListener('keydown', e => {
+    if (state === 'play') {
+      const k = e.code.startsWith('Numpad') ? e.code.slice(6) : e.code.startsWith('Digit') ? e.code.slice(5) : null;
+      const idx = k ? KEYS.indexOf(k) : -1;
+      if (idx >= 0) { e.preventDefault(); whack(idx); }
+    } else if (state === 'over' && e.key === 'Enter' && $('overOv').classList.contains('show') && document.activeElement !== $('editBtn')) {
+      e.preventDefault(); startGame();
+    }
+  });
+  stage.addEventListener('contextmenu', e => e.preventDefault());
 
   // ── 순위표 ──
   function boardMsg(text) { const m = $('boardMsg'); m.textContent = text; m.hidden = !text; }
@@ -448,11 +459,13 @@ h1{font-weight:400; font-size:clamp(32px,4.6vw,48px); margin:0; letter-spacing:-
     } else mine.hidden = true;
   }
 
+  let reloadAgain = false;
   async function loadBoard() {
     if (!SCRIPT_URL) { boardMsg('순위표 주소가 아직 연결되지 않았어요'); return; }
-    if (loading) return; loading = true;
+    if (loading) { reloadAgain = true; return; }
+    loading = true;
     try {
-      const q = '?action=top&name=' + encodeURIComponent(myName) + '&team=' + encodeURIComponent(myTeam);
+      const q = '?action=top&name=' + encodeURIComponent(myName) + '&team=' + encodeURIComponent(myTeam) + '&t=' + Date.now();
       const d = await (await fetch(SCRIPT_URL + q)).json();
       if (!d.ok) throw new Error();
       rows = d.top || [];
@@ -462,6 +475,7 @@ h1{font-weight:400; font-size:clamp(32px,4.6vw,48px); margin:0; letter-spacing:-
       if (!rows.length) boardMsg('순위표를 불러오지 못했어요. 새로고침해 주세요');
     }
     loading = false;
+    if (reloadAgain) { reloadAgain = false; loadBoard(); }
   }
 
   async function submitScore(n, lv) {
@@ -472,6 +486,7 @@ h1{font-weight:400; font-size:clamp(32px,4.6vw,48px); margin:0; letter-spacing:-
     try {
       const res = await fetch(SCRIPT_URL, {
         method: 'POST',
+        keepalive: true,
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'submit', name: myName, team: myTeam, score: n, level: lv, ms: Math.round(performance.now() - startedAt) })
       });
@@ -481,6 +496,10 @@ h1{font-weight:400; font-size:clamp(32px,4.6vw,48px); margin:0; letter-spacing:-
         return;
       }
       myBest = d.best; myRank = d.rank;
+      const mine = rows.find(r => r.name === myName && r.team === myTeam);
+      if (mine) mine.best = d.best; else rows.push({ name: myName, team: myTeam, best: d.best, level: lv });
+      rows.sort((a, b) => b.best - a.best);
+      renderBoard();
       if (d.newBest) { note.textContent = '새 최고 기록! 지금 ' + d.rank + '위예요'; note.className = 'note good'; }
       else note.textContent = '내 최고 기록은 ' + d.best + '마리, 지금 ' + d.rank + '위예요';
       loadBoard();
