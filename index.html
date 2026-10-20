@@ -533,6 +533,27 @@ const fbReady = (async () => {
 })();
 const now = () => Date.now() + offset;
 
+// ───────── 예전 구글 시트 두더지 기록 옮기기 (한 번만, 더 높은 기록만 반영) ─────────
+const LEGACY_WHACK = [
+  ['김승희', '따북사업팀', 32, 6, '2026-10-19T16:43:06+09:00'],
+  ['한가린', '이북사업팀', 24, 5, '2026-10-19T16:53:37+09:00'],
+  ['홍길동', '미북사업팀', 32, 6, '2026-10-19T17:14:45+09:00'],
+  ['김태희', '미북사업팀', 17, 3, '2026-10-19T16:41:07+09:00'],
+  ['김태희', '미부기온앤온', 27, 5, '2026-10-19T16:43:33+09:00'],
+  ['윤수민', '미부기사업팀', 12, 3, '2026-10-19T16:59:49+09:00'],
+  ['소정', '원빈마늘', 13, 3, '2026-10-19T16:56:45+09:00']
+];
+fbReady.then(async ok => {
+  if (!ok) return;
+  try { if (localStorage.getItem('mg-legacy-whack-1')) return; } catch (e) {}
+  for (const [name, team, best, level, at] of LEGACY_WHACK) {
+    try {
+      await runTransaction(ref(db, 'scores/whack/' + keyOf(name + '|' + team)), cur => (cur && cur.best >= best) ? undefined : { name, team, best, level, at: Date.parse(at) });
+    } catch (e) {}
+  }
+  try { localStorage.setItem('mg-legacy-whack-1', '1'); } catch (e) {}
+});
+
 // ───────── 프로필 ─────────
 const me = { name: '', team: '' };
 try {
@@ -620,6 +641,7 @@ function watchBoard(game, n, ol, msg) {
     const list = [];
     snap.forEach(ch => { const v = ch.val(); if (!c.filter || c.filter(v)) list.push(v); });
     if (!c.asc) list.reverse();
+    if (c.order === 'best') list.sort((x, y) => (c.asc ? x.best - y.best : y.best - x.best) || (x.at || 0) - (y.at || 0));
     renderRanks(ol, msg, list.slice(0, n).map(c.row), c.empty);
   }, () => { msg.textContent = '순위표를 불러오지 못했어요'; });
 }
