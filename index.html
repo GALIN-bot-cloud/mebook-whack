@@ -369,7 +369,7 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
   <section class="view" id="v-hide">
     <a class="back" href="#/">← 게임 목록</a>
     <h1>숨바꼭질</h1>
-    <p class="sub">다른 사람이 숨은 그림을 골라 60초 안에 찾아요. 내가 숨고 싶으면 숨으러 가기를 눌러요.</p>
+    <p class="sub">다른 사람이 숨은 그림을 골라 500초 안에 찾아요. 내가 숨고 싶으면 숨으러 가기를 눌러요.</p>
     <div class="layout">
       <div>
         <a class="btn" href="#/hide/new">숨으러 가기</a>
@@ -378,7 +378,7 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
       </div>
       <aside class="panel board">
         <h2>잘 숨은 순위</h2>
-        <p class="bsub">찾는 사람들이 걸린 평균 시간이 길수록 높아요.</p>
+        <p class="bsub">포기자가 많을수록, 찾는 데 오래 걸릴수록 높아요.</p>
         <ol class="rank-list" id="hBoard"></ol>
         <div class="empty" id="hBoardMsg"></div>
       </aside>
@@ -426,7 +426,7 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
       <div>
         <div class="cvbox">
           <canvas id="sCv" aria-label="찾기 화면" style="cursor:crosshair"></canvas>
-          <div class="timer" id="sTimer" hidden>60.0</div>
+          <div class="timer" id="sTimer" hidden>500.0</div>
           <div class="overlay show" id="sIntro">
             <p class="muted" id="sIntroText">불러오는 중이에요</p>
             <button class="btn" id="sStart" hidden>찾기 시작</button>
@@ -441,7 +441,7 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
       </div>
       <aside class="panel board">
         <h2>잘 숨은 순위</h2>
-        <p class="bsub">찾는 사람들이 걸린 평균 시간이 길수록 높아요.</p>
+        <p class="bsub">포기자가 많을수록, 찾는 데 오래 걸릴수록 높아요.</p>
         <ol class="rank-list" id="sBoard"></ol>
         <div class="empty" id="sBoardMsg"></div>
       </aside>
@@ -591,6 +591,15 @@ $('profileDlg').addEventListener('cancel', e => { if (!(me.name && me.team)) e.p
 $('profileChip').addEventListener('click', () => openProfile());
 const needProfile = cb => (me.name && me.team) ? cb() : openProfile(cb);
 
+// 숨바꼭질 통계 (예전 방식 기록도 같이 읽어요)
+function hideStats(st) {
+  st = st || {};
+  if (st.gaveup != null) return { tries: st.tries || 0, found: st.found || 0, gaveup: st.gaveup || 0, totalMs: st.totalMs || 0, avg: st.avg != null ? st.avg : (st.score || 0), score: st.score || 0 };
+  const found = st.found || 0, gaveup = Math.max(0, (st.tries || 0) - found);
+  const totalMs = Math.max(0, (st.totalMs || 0) - gaveup * 60000);
+  const avg = found ? Math.round(totalMs / found / 100) / 10 : 0;
+  return { tries: found + gaveup, found, gaveup, totalMs, avg, score: gaveup * 1000 + avg };
+}
 // ───────── 순위표 ─────────
 const BOARDS = {
   whack: {
@@ -616,7 +625,7 @@ const BOARDS = {
   hide: {
     path: 'hides', order: 'stats/score', empty: '아직 누가 찾아본 숨바꼭질이 없어요.', over: 3,
     filter: v => v && v.stats && v.stats.tries > 0,
-    row: v => ({ title: v.name, sub: v.team + ', ' + v.stats.tries + '명 도전', value: Number(v.stats.score || 0).toFixed(1), unit: '초', me: v.uid === uid })
+    row: v => { const h = hideStats(v.stats); return { title: v.name, sub: v.team + ', 찾은 사람 ' + h.found + '명' + (h.gaveup ? ', 포기자 ' + h.gaveup + '명' : ''), value: h.found ? h.avg.toFixed(1) : '아무도 못 찾음', unit: h.found ? '초' : '', me: v.uid === uid }; }
   }
 };
 function renderRanks(ol, msg, rows, empty) {
@@ -1309,7 +1318,7 @@ const HideList = {
         c.getContext('2d').drawImage(sceneCanvas(v.scene), 0, 0, 320, 180);
         const body = el('div', 'hc-body', v.name + ' 님이 ' + (SCENES[v.scene] ? SCENES[v.scene].name : '어딘가') + '에 숨었어요');
         const st = v.stats || {};
-        const tail = v.uid === uid ? '내가 숨은 그림' : seen.has(id) ? '이미 찾아봤어요' : (st.tries ? st.tries + '명 도전, 평균 ' + Number(st.score || 0).toFixed(1) + '초' : '아직 아무도 안 찾아봤어요');
+        const tail = v.uid === uid ? '내가 숨은 그림' : seen.has(id) ? '이미 찾아봤어요' : (st.tries ? (() => { const h = hideStats(st); return (h.found ? h.found + '명이 평균 ' + h.avg.toFixed(1) + '초에 찾음' : '아무도 못 찾음') + (h.gaveup ? ', 포기자 ' + h.gaveup + '명' : ''); })() : '아직 아무도 안 찾아봤어요');
         body.appendChild(el('small', '', v.team + ', ' + tail));
         b.append(c, body);
         b.addEventListener('click', () => { location.hash = '#/hide/' + id; });
@@ -1465,7 +1474,7 @@ const Maker = (() => {
 
 // ═════════════════ 숨바꼭질: 찾기 ═════════════════
 const Seek = (() => {
-  const cv = $('sCv'), LIMIT = 60000, PENALTY = 3000;
+  const cv = $('sCv'), LIMIT = 500000, PENALTY = 3000;
   const S = { id: null, hide: null, img: null, alpha: null, w: 0, state: 'load', t0: 0, pen: 0, marks: [], raf: 0, result: null, counted: false };
   function render() {
     const c = fitCanvas(cv);
@@ -1488,7 +1497,7 @@ const Seek = (() => {
       const el2 = performance.now() - S.t0 + S.pen, left = Math.max(0, LIMIT - el2);
       $('sTimer').textContent = (left / 1000).toFixed(1);
       $('sTimer').classList.toggle('warn', left < 10000);
-      if (left <= 0) finish(false, LIMIT);
+      if (left <= 0) finish(false, LIMIT, 'time');
     }
     render();
   }
@@ -1503,22 +1512,26 @@ const Seek = (() => {
     }
     return false;
   }
-  async function finish(found, ms) {
+  async function finish(found, ms, why) {
     if (S.state !== 'play') return;
     S.state = 'done'; S.result = { found, ms };
     $('sTimer').hidden = true; $('sGiveup').hidden = true; $('sMore').hidden = false; $('sMake').hidden = false;
     const own = S.hide.uid === uid;
-    $('sResult').textContent = found ? (ms / 1000).toFixed(1) + '초 만에 찾았어요!' + (S.pen ? ' (헛손질 ' + (S.pen / PENALTY) + '번 포함)' : '') : '못 찾았어요. 동그라미 친 곳에 숨어 있었어요!';
+    $('sResult').textContent = found ? (ms / 1000).toFixed(1) + '초 만에 찾았어요!' + (S.pen ? ' (헛손질 ' + (S.pen / PENALTY) + '번 포함)' : '') : (why === 'time' ? '시간이 다 됐어요. ' : '포기했어요. ') + '동그라미 친 곳에 숨어 있었어요!';
     if (own || S.counted || !db) return;
     S.counted = true; markSeen(S.id);
     try {
-      await runTransaction(ref(db, 'hides/' + S.id + '/stats'), cur => {
-        cur = cur || { tries: 0, found: 0, totalMs: 0, score: 0 };
-        cur.tries = (cur.tries || 0) + 1; cur.found = (cur.found || 0) + (found ? 1 : 0);
-        cur.totalMs = (cur.totalMs || 0) + Math.min(ms, LIMIT);
-        cur.score = Math.round(cur.totalMs / cur.tries / 100) / 10;
-        return cur;
+      const res = await runTransaction(ref(db, 'hides/' + S.id + '/stats'), cur => {
+        const h = hideStats(cur);
+        if (found) { h.found++; h.totalMs += ms; } else h.gaveup++;
+        h.tries = h.found + h.gaveup;
+        h.avg = h.found ? Math.round(h.totalMs / h.found / 100) / 10 : 0;
+        // 순위: 포기자가 많을수록, 그다음 평균 찾은 시간이 길수록 위
+        h.score = h.gaveup * 1000 + h.avg;
+        return h;
       });
+      const h = hideStats(res.snapshot.val());
+      $('sResult').textContent += ' 지금까지 찾은 사람 ' + h.found + '명, 포기자 ' + h.gaveup + '명이에요.';
     } catch (e) {}
   }
   cv.addEventListener('pointerdown', e => {
@@ -1531,7 +1544,7 @@ const Seek = (() => {
     S.state = 'play'; S.t0 = performance.now(); S.pen = 0; S.marks = [];
     $('sIntro').classList.remove('show'); $('sTimer').hidden = false; $('sGiveup').hidden = false;
   });
-  $('sGiveup').addEventListener('click', () => finish(false, LIMIT));
+  $('sGiveup').addEventListener('click', () => finish(false, performance.now() - S.t0 + S.pen, 'give'));
   return {
     async enter(id) {
       Object.assign(S, { id, hide: null, img: null, state: 'load', marks: [], result: null, counted: false, pen: 0 });
@@ -1553,7 +1566,7 @@ const Seek = (() => {
         S.w = S.hide.h * S.img.naturalWidth / S.img.naturalHeight;
         const sceneName = SCENES[S.hide.scene] ? SCENES[S.hide.scene].name : '어딘가';
         $('sTitle').textContent = S.hide.name + ' 님을 찾아라!';
-        $('sSub').textContent = S.hide.team + '의 ' + S.hide.name + ' 님이 ' + CHAR_NAME[S.hide.char] + '를 색칠해서 ' + sceneName + '에 숨었어요. 60초 안에 클릭해서 찾아요. 헛손질하면 3초가 줄어요.';
+        $('sSub').textContent = S.hide.team + '의 ' + S.hide.name + ' 님이 ' + CHAR_NAME[S.hide.char] + '를 색칠해서 ' + sceneName + '에 숨었어요. 500초 안에 클릭해서 찾아요. 헛손질하면 3초가 줄어요.';
         const own = S.hide.uid === uid, seen = seenSet().has(id);
         $('sIntroText').textContent = own ? '내가 숨은 그림이에요. 찾아봐도 기록에는 안 들어가요.' : seen ? '이미 한 번 찾아본 그림이에요. 다시 해도 기록에는 안 들어가요.' : '준비되면 시작을 눌러요. 시간이 바로 흘러요!';
         S.counted = own || seen;
