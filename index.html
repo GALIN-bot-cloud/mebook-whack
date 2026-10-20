@@ -637,7 +637,7 @@ function renderRanks(ol, msg, rows, empty) {
   rows.forEach((r, i) => {
     const li = el('li', r.me ? 'me' : '');
     li.append(el('span', 'rank', i < 3 ? medals[i] : String(i + 1)));
-    const who = el('span', 'who' + (r.two ? ' two' : ''), String(r.title || '참가자'));
+    const who = el('span', 'who' + (r.sub ? ' two' : ''), String(r.title || '참가자'));
     if (r.sub) who.appendChild(el('small', '', String(r.sub)));
     li.appendChild(who);
     if (r.value !== '') { const sc = el('span', 'score', String(r.value)); sc.appendChild(el('small', '', r.unit)); li.appendChild(sc); }
