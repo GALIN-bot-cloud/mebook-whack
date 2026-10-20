@@ -107,6 +107,8 @@ input.txt:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 .rank{width:26px; text-align:center; font-size:18px; color:var(--ink-soft); flex:none}
 .who{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .who small{color:var(--ink-soft); font-size:14px; margin-left:6px}
+.who.two{white-space:normal}
+.who.two small{display:block; margin-left:0; margin-top:1px}
 .score{flex:none; font-size:19px}
 .score small{font-size:13px; color:var(--ink-soft); margin-left:2px}
 .empty{color:var(--ink-soft); font-size:15px; padding:6px 2px; line-height:1.5}
@@ -625,7 +627,7 @@ const BOARDS = {
   hide: {
     path: 'hides', order: 'stats/score', empty: '아직 누가 찾아본 숨바꼭질이 없어요.', over: 3,
     filter: v => v && v.stats && v.stats.tries > 0,
-    row: v => { const h = hideStats(v.stats); return { title: v.name, sub: v.team + ', 찾은 사람 ' + h.found + '명' + (h.gaveup ? ', 포기자 ' + h.gaveup + '명' : ''), value: h.found ? h.avg.toFixed(1) : '아무도 못 찾음', unit: h.found ? '초' : '', me: v.uid === uid }; }
+    row: v => { const h = hideStats(v.stats); return { title: v.name, sub: '찾은 사람 ' + h.found + '명 / 포기자 ' + h.gaveup + '명', value: '', unit: '', two: true, me: v.uid === uid }; }
   }
 };
 function renderRanks(ol, msg, rows, empty) {
@@ -635,10 +637,11 @@ function renderRanks(ol, msg, rows, empty) {
   rows.forEach((r, i) => {
     const li = el('li', r.me ? 'me' : '');
     li.append(el('span', 'rank', i < 3 ? medals[i] : String(i + 1)));
-    const who = el('span', 'who', String(r.title || '참가자'));
+    const who = el('span', 'who' + (r.two ? ' two' : ''), String(r.title || '참가자'));
     if (r.sub) who.appendChild(el('small', '', String(r.sub)));
-    const sc = el('span', 'score', String(r.value)); sc.appendChild(el('small', '', r.unit));
-    li.append(who, sc); ol.appendChild(li);
+    li.appendChild(who);
+    if (r.value !== '') { const sc = el('span', 'score', String(r.value)); sc.appendChild(el('small', '', r.unit)); li.appendChild(sc); }
+    ol.appendChild(li);
   });
 }
 function watchBoard(game, n, ol, msg) {
@@ -1318,8 +1321,8 @@ const HideList = {
         c.getContext('2d').drawImage(sceneCanvas(v.scene), 0, 0, 320, 180);
         const body = el('div', 'hc-body', v.name + ' 님이 ' + (SCENES[v.scene] ? SCENES[v.scene].name : '어딘가') + '에 숨었어요');
         const st = v.stats || {};
-        const tail = v.uid === uid ? '내가 숨은 그림' : seen.has(id) ? '이미 찾아봤어요' : (st.tries ? (() => { const h = hideStats(st); return (h.found ? h.found + '명이 평균 ' + h.avg.toFixed(1) + '초에 찾음' : '아무도 못 찾음') + (h.gaveup ? ', 포기자 ' + h.gaveup + '명' : ''); })() : '아직 아무도 안 찾아봤어요');
-        body.appendChild(el('small', '', v.team + ', ' + tail));
+        const tail = v.uid === uid ? '내가 숨은 그림' : seen.has(id) ? '이미 찾아봤어요' : (st.tries ? (() => { const h = hideStats(st); return '찾은 사람 ' + h.found + '명 / 포기자 ' + h.gaveup + '명'; })() : '아직 아무도 안 찾아봤어요');
+        body.appendChild(el('small', '', tail));
         b.append(c, body);
         b.addEventListener('click', () => { location.hash = '#/hide/' + id; });
         list.appendChild(b);
