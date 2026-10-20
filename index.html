@@ -79,8 +79,8 @@ input.txt:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 .games{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:26px}
 @media (max-width:980px){ .games{grid-template-columns:1fr} }
 .gcard{display:flex; flex-direction:column; gap:12px}
-.gcover{height:150px; border-radius:14px; border:3px solid var(--ink); display:flex; align-items:flex-end; justify-content:center; gap:4px; overflow:hidden; padding-top:12px}
-.gcover img{height:120px; width:auto}
+.gcover{border-radius:14px; border:3px solid var(--ink); overflow:hidden; line-height:0}
+.gcover canvas{display:block; width:100%; height:auto; aspect-ratio:640/300}
 .gcover.whack{background:var(--field)} .gcover.jump{background:var(--sky)} .gcover.hide{background:#CDEBC4}
 .gcover.dodge{background:#BFDDFF} .gcover.run{background:#F2B49A} .gcover.soccer{background:#8ED27B}
 .sgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
@@ -231,42 +231,42 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
     <p class="sub">미빗, 미부기, 따봉미부기와 함께하는 미니게임이에요. 게임마다 순위표가 따로 있어요.</p>
     <div class="games">
       <article class="panel gcard">
-        <div class="gcover whack"><img data-img="mibit" alt=""><img data-img="mibugi" alt=""></div>
+        <div class="gcover whack"><canvas data-cover="whack" role="img" aria-label="캐릭터들이 구멍에서 튀어나오는 두더지 잡기 그림"></canvas></div>
         <h2>두더지 잡기<span class="tag">혼자</span></h2>
         <p>튀어나오는 캐릭터를 잡고 폭탄은 피해요. 레벨이 오를수록 빨라져요.</p>
         <div class="mini"><h3>상위 3명</h3><ol class="rank-list" id="hubWhack"></ol><div class="empty" id="hubWhackMsg"></div></div>
         <a class="btn" href="#/whack">하러 가기</a>
       </article>
       <article class="panel gcard">
-        <div class="gcover jump"><img data-img="mibugi" alt=""><img data-img="ddabong" alt=""><img data-img="mibit" alt=""></div>
+        <div class="gcover jump"><canvas data-cover="jump" role="img" aria-label="세 캐릭터가 줄을 넘는 그림"></canvas></div>
         <h2>단체줄넘기<span class="tag">협동</span></h2>
         <p>방을 만들고 친구를 초대해요. 다 같이 박자 맞춰 넘고, 한 명이라도 걸리면 끝!</p>
         <div class="mini"><h3>팀 순위 상위 3팀</h3><ol class="rank-list" id="hubJump"></ol><div class="empty" id="hubJumpMsg"></div></div>
         <a class="btn" href="#/jump">하러 가기</a>
       </article>
       <article class="panel gcard">
-        <div class="gcover hide"><img data-img="ddabong" alt=""></div>
+        <div class="gcover hide"><canvas data-cover="hide" role="img" aria-label="꽃밭에 숨은 따봉미부기와 돋보기 그림"></canvas></div>
         <h2>숨바꼭질<span class="tag">도전</span></h2>
         <p>캐릭터를 장면 색으로 칠해서 숨기고, 다른 사람이 숨은 곳도 찾아봐요.</p>
         <div class="mini"><h3>가장 잘 숨은 3명</h3><ol class="rank-list" id="hubHide"></ol><div class="empty" id="hubHideMsg"></div></div>
         <a class="btn" href="#/hide">하러 가기</a>
       </article>
       <article class="panel gcard">
-        <div class="gcover dodge"><img data-img="mibit" alt=""><img data-img="bomb" alt="" style="height:60px; align-self:flex-start"><img data-img="mibugi" alt=""></div>
+        <div class="gcover dodge"><canvas data-cover="dodge" role="img" aria-label="떨어지는 공을 피하는 그림"></canvas></div>
         <h2>공 피하기<span class="tag">같이</span></h2>
         <p>하늘에서 떨어지는 공을 다 같이 피해요. 끝까지 살아남은 사람이 1등!</p>
         <div class="mini"><h3>오래 버틴 3명</h3><ol class="rank-list" id="hubDodge"></ol><div class="empty" id="hubDodgeMsg"></div></div>
         <a class="btn" href="#/dodge">하러 가기</a>
       </article>
       <article class="panel gcard">
-        <div class="gcover run"><img data-img="ddabong" alt=""><img data-img="mibit" alt=""><img data-img="mibugi" alt=""></div>
+        <div class="gcover run"><canvas data-cover="run" role="img" aria-label="트랙에서 허들을 넘으며 달리는 그림"></canvas></div>
         <h2>달리기<span class="tag">같이</span></h2>
         <p>출발선에 모여서 결승선까지 달려요. 키를 번갈아 연타하고 허들은 점프!</p>
         <div class="mini"><h3>빠른 3명</h3><ol class="rank-list" id="hubRun"></ol><div class="empty" id="hubRunMsg"></div></div>
         <a class="btn" href="#/run">하러 가기</a>
       </article>
       <article class="panel gcard">
-        <div class="gcover soccer"><img data-img="mibugi" alt=""><img data-img="mibit" alt=""><img data-img="bomb" alt="" style="height:70px"></div>
+        <div class="gcover soccer"><canvas data-cover="soccer" role="img" aria-label="폭탄 골키퍼에게 슛하는 그림"></canvas></div>
         <h2>협동 축구<span class="tag">협동</span></h2>
         <p>한 팀이 되어 90초 동안 폭탄 골키퍼를 뚫고 골을 넣어요.</p>
         <div class="mini"><h3>팀 순위 상위 3팀</h3><ol class="rank-list" id="hubSoccer"></ol><div class="empty" id="hubSoccerMsg"></div></div>
@@ -2166,6 +2166,153 @@ const Soccer = makeRoomGame('soccer', {
     }
   }
 });
+
+// ═════════════════ 첫 화면 게임 대표 그림 ═════════════════
+const COVER_W = 640, COVER_H = 300;
+function coverChar(c, key, cx, bottom, h, tilt, flip) {
+  const im = IM[key] || IM.mibit, w = h * im.naturalWidth / im.naturalHeight;
+  c.save(); c.translate(cx, bottom - h / 2);
+  if (tilt) c.rotate(tilt);
+  if (flip) c.scale(-1, 1);
+  c.drawImage(im, -w / 2, -h / 2, w, h); c.restore();
+}
+function speedLines(c, x, y, len, n, color) {
+  c.save(); c.strokeStyle = color || 'rgba(255,255,255,.9)'; c.lineWidth = 4; c.lineCap = 'round';
+  for (let i = 0; i < n; i++) { const yy = y + i * 14; c.beginPath(); c.moveTo(x - len + i * 10, yy); c.lineTo(x, yy); c.stroke(); }
+  c.restore();
+}
+function popText(c, text, x, y, size, color, rot) {
+  c.save(); c.translate(x, y); c.rotate(rot || 0);
+  c.font = size + 'px ' + FONT; c.textAlign = 'center'; c.lineJoin = 'round';
+  c.lineWidth = size / 5; c.strokeStyle = '#26206B'; c.strokeText(text, 0, 0);
+  c.fillStyle = color; c.fillText(text, 0, 0); c.restore();
+}
+const COVERS = {
+  whack(c) {
+    c.fillStyle = '#F7CDB8'; c.fillRect(0, 0, COVER_W, COVER_H);
+    c.fillStyle = '#F1BBA2'; for (let y = 10; y < COVER_H; y += 22) for (let x = 10; x < COVER_W; x += 22) { c.beginPath(); c.arc(x, y, 2.5, 0, 7); c.fill(); }
+    const holes = [[150, 250, 'mibit', 0.92], [330, 262, 'bomb', 0.62], [510, 250, 'mibugi', 0.78]];
+    holes.forEach(([x, y, k, up]) => {
+      c.fillStyle = '#E9A98C'; c.beginPath(); c.ellipse(x, y, 92, 30, 0, 0, 7); c.fill();
+      c.fillStyle = '#2A2475'; c.beginPath(); c.ellipse(x, y, 80, 22, 0, 0, 7); c.fill();
+      c.save(); c.beginPath(); c.rect(x - 90, 0, 180, y); c.clip();
+      const h = k === 'bomb' ? 120 : 190; coverChar(c, k, x, y + h * (1 - up), h);
+      c.restore();
+    });
+    // 뿅망치
+    c.save(); c.translate(560, 70); c.rotate(-0.7);
+    c.fillStyle = '#D9965A'; c.strokeStyle = '#26206B'; c.lineWidth = 5;
+    c.beginPath(); c.roundRect ? c.roundRect(-9, 0, 18, 120, 8) : c.rect(-9, 0, 18, 120); c.fill(); c.stroke();
+    c.fillStyle = '#FF7A9C'; c.beginPath(); c.roundRect ? c.roundRect(-58, -40, 116, 52, 16) : c.rect(-58, -40, 116, 52); c.fill(); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.6)'; c.fillRect(-44, -30, 24, 10);
+    c.restore();
+    popText(c, '+1', 230, 70, 54, '#2E9E6B', -0.15);
+    popText(c, '뿅!', 420, 60, 44, '#FFC531', 0.12);
+  },
+  jump(c) {
+    c.fillStyle = '#CFE4FF'; c.fillRect(0, 0, COVER_W, COVER_H);
+    c.fillStyle = 'rgba(255,255,255,.85)'; [[90, 60, 34], [130, 52, 26], [520, 70, 30], [556, 62, 22]].forEach(([x, y, r]) => { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); });
+    c.fillStyle = '#9ED37F'; c.fillRect(0, 252, COVER_W, 48); c.fillStyle = '#86C267'; c.fillRect(0, 252, COVER_W, 6);
+    // 기둥과 줄 (머리 위로 넘어가는 순간)
+    c.fillStyle = '#26206B'; [40, 600].forEach(x => { c.fillRect(x - 6, 170, 12, 84); c.beginPath(); c.arc(x, 170, 12, 0, 7); c.fill(); });
+    c.strokeStyle = '#E2465B'; c.lineWidth = 7; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(40, 170); c.quadraticCurveTo(320, 300, 600, 170); c.stroke();
+    c.strokeStyle = 'rgba(226,70,91,.25)'; c.lineWidth = 5;
+    c.beginPath(); c.moveTo(40, 170); c.quadraticCurveTo(320, 330, 600, 170); c.stroke();
+    // 뛰는 캐릭터들
+    [['mibugi', 180, 205, -0.06], ['ddabong', 320, 190, 0.04], ['mibit', 460, 200, 0.08]].forEach(([k, x, b, t]) => {
+      c.fillStyle = 'rgba(0,0,0,.14)'; c.beginPath(); c.ellipse(x, 262, 34, 7, 0, 0, 7); c.fill();
+      coverChar(c, k, x, b, 150, t);
+    });
+    popText(c, '하나! 둘!', 320, 44, 40, '#FFC531', -0.04);
+  },
+  hide(c) {
+    c.drawImage(sceneCanvas('garden'), 0, 0, 960, 540, 0, 0, COVER_W, COVER_W * 540 / 960);
+    // 꽃밭 색으로 칠한 따봉미부기 (살짝만 보이게)
+    const tc = document.createElement('canvas'), im = IM.ddabong;
+    tc.height = 300; tc.width = Math.round(im.naturalWidth * 300 / im.naturalHeight);
+    const t = tc.getContext('2d'); t.drawImage(im, 0, 0, tc.width, tc.height);
+    t.globalCompositeOperation = 'source-atop'; t.globalAlpha = 0.72; t.fillStyle = '#7CC46B'; t.fillRect(0, 0, tc.width, tc.height);
+    t.globalAlpha = 1; for (let i = 0; i < 40; i++) { t.fillStyle = ['#FF6B8B', '#FFD43B', '#FFFFFF', '#B197FC'][i % 4]; t.beginPath(); t.arc(Math.random() * tc.width, Math.random() * tc.height, 6 + Math.random() * 8, 0, 7); t.fill(); }
+    const th = 150, tw = th * tc.width / tc.height;
+    c.drawImage(tc, 400 - tw / 2, 120, tw, th);
+    // 돋보기
+    c.save();
+    c.strokeStyle = '#26206B'; c.lineWidth = 12; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(250, 200); c.lineTo(320, 270); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.28)'; c.lineWidth = 10;
+    c.beginPath(); c.arc(200, 150, 70, 0, 7); c.fill(); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 6; c.beginPath(); c.arc(200, 150, 50, 3.6, 4.4); c.stroke();
+    c.restore();
+    popText(c, '어디 있지?', 200, 62, 40, '#FFFFFF', -0.06);
+    popText(c, '?', 560, 90, 70, '#FFC531', 0.2);
+  },
+  dodge(c) {
+    const g = c.createLinearGradient(0, 0, 0, COVER_H); g.addColorStop(0, '#9FC8FF'); g.addColorStop(1, '#E3EFFF');
+    c.fillStyle = g; c.fillRect(0, 0, COVER_W, COVER_H);
+    c.fillStyle = '#9ED37F'; c.fillRect(0, 262, COVER_W, 38); c.fillStyle = '#86C267'; c.fillRect(0, 262, COVER_W, 5);
+    const balls = [[90, 70, 24, '#E2465B'], [200, 140, 18, '#FFC531'], [300, 40, 28, '#5C7CFA'], [420, 120, 22, '#2FB58F'], [540, 60, 26, '#8A6CE0'], [600, 170, 16, '#FF8FB8'], [150, 10, 14, '#F4A259']];
+    balls.forEach(([x, y, r, col]) => {
+      c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 4; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(x - r * 0.5, y - r - 34); c.lineTo(x - r * 0.5, y - r - 8); c.moveTo(x + r * 0.5, y - r - 26); c.lineTo(x + r * 0.5, y - r - 6); c.stroke();
+      c.fillStyle = col; c.strokeStyle = '#26206B'; c.lineWidth = 4; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.stroke();
+      c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.arc(x - r * 0.35, y - r * 0.35, r * 0.28, 0, 7); c.fill();
+    });
+    coverChar(c, 'mibit', 200, 268, 140, -0.22);
+    speedLines(c, 140, 200, 50, 3);
+    coverChar(c, 'mibugi', 450, 268, 140, 0.2);
+    speedLines(c, 530, 200, 50, 3);
+    popText(c, '피해!', 320, 230, 46, '#E2465B', -0.05);
+  },
+  run(c) {
+    c.fillStyle = '#8A93B8'; c.fillRect(0, 0, COVER_W, 80);
+    for (let i = 0; i < 70; i++) { const x = (i * 37) % COVER_W + 8, y = 14 + (i % 3) * 22; c.fillStyle = ['#E2465B', '#3B5BDB', '#FFC531', '#2FB58F', '#8A6CE0', '#FF8FB8'][i % 6]; c.beginPath(); c.arc(x, y + 8, 7, 0, 7); c.fill(); c.fillStyle = '#F6EEDF'; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill(); }
+    c.fillStyle = '#5C6390'; c.fillRect(0, 78, COVER_W, 8);
+    c.fillStyle = '#D9714E'; c.fillRect(0, 86, COVER_W, 214);
+    c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 3;
+    [86, 157, 228, 299].forEach(y => { c.beginPath(); c.moveTo(0, y); c.lineTo(COVER_W, y); c.stroke(); });
+    for (let y = 86, j = 0; y < 300; y += 14, j++) { c.fillStyle = j % 2 ? '#26206B' : '#FFFFFF'; c.fillRect(560, y, 14, 14); c.fillStyle = j % 2 ? '#FFFFFF' : '#26206B'; c.fillRect(574, y, 14, 14); }
+    // 허들
+    c.strokeStyle = '#26206B'; c.lineWidth = 5;
+    c.beginPath(); c.moveTo(380, 222); c.lineTo(380, 182); c.moveTo(410, 222); c.lineTo(410, 182); c.stroke();
+    c.fillStyle = '#FFFFFF'; c.fillRect(372, 176, 46, 12); c.strokeRect(372, 176, 46, 12);
+    [['ddabong', 470, 150, 105, 0.12], ['mibit', 400, 200, 120, -0.1], ['mibugi', 250, 296, 120, 0.1]].forEach(([k, x, b, h, t], i) => {
+      speedLines(c, x - 50, b - h * 0.65, 60, 3);
+      coverChar(c, k, x, b, h, t);
+    });
+    popText(c, '결승선!', 520, 60, 40, '#FFC531', 0.06);
+  },
+  soccer(c) {
+    for (let i = 0; i < 8; i++) { c.fillStyle = i % 2 ? '#5DAA4F' : '#66B657'; c.fillRect(i * 80, 0, 80, COVER_H); }
+    c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 4;
+    c.beginPath(); c.arc(60, 150, 70, -1.2, 1.2); c.stroke();
+    c.strokeRect(470, 40, 180, 220);
+    c.fillStyle = 'rgba(255,255,255,.4)'; c.fillRect(590, 90, 50, 130);
+    c.strokeStyle = '#FFFFFF'; c.lineWidth = 1.5;
+    for (let y = 90; y <= 220; y += 12) { c.beginPath(); c.moveTo(590, y); c.lineTo(640, y); c.stroke(); }
+    for (let x = 590; x <= 640; x += 12) { c.beginPath(); c.moveTo(x, 90); c.lineTo(x, 220); c.stroke(); }
+    c.lineWidth = 7; c.beginPath(); c.moveTo(590, 90); c.lineTo(640, 90); c.moveTo(590, 220); c.lineTo(640, 220); c.moveTo(590, 90); c.lineTo(590, 220); c.stroke();
+    // 폭탄 골키퍼
+    const bomb = IM.bomb, bw = 90 * bomb.naturalWidth / bomb.naturalHeight;
+    c.drawImage(bomb, 560 - bw / 2, 150, bw, 90);
+    // 공과 궤적
+    c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 5; c.setLineDash([10, 12]);
+    c.beginPath(); c.moveTo(250, 220); c.quadraticCurveTo(420, 60, 600, 120); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#FFFFFF'; c.strokeStyle = '#26206B'; c.lineWidth = 4; c.beginPath(); c.arc(520, 92, 18, 0, 7); c.fill(); c.stroke();
+    c.fillStyle = '#26206B'; c.beginPath(); c.arc(520, 92, 7, 0, 7); c.fill();
+    coverChar(c, 'mibugi', 220, 290, 160, -0.18);
+    coverChar(c, 'mibit', 90, 280, 130, 0.08);
+    popText(c, '슛!', 330, 70, 56, '#FFC531', -0.1);
+  }
+};
+function drawCovers() {
+  document.querySelectorAll('canvas[data-cover]').forEach(cv => {
+    const d = 2; cv.width = COVER_W * d; cv.height = COVER_H * d;
+    const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0);
+    try { COVERS[cv.dataset.cover](c); } catch (e) { console.error(e); }
+  });
+}
+imgReady.then(() => (document.fonts ? document.fonts.ready : Promise.resolve())).then(drawCovers);
 
 route();
 </script>
