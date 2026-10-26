@@ -77,8 +77,16 @@ input.txt:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 
 /* 첫 화면 */
 .games{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:26px}
+.games.four{grid-template-columns:repeat(4,minmax(0,1fr)); gap:22px; margin-bottom:34px}
+.games.four .gcard h2{font-size:24px}
+@media (max-width:1100px){ .games.four{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:620px){ .games.four{grid-template-columns:1fr} }
+.ghead{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin:0 0 14px}
+.ghead h2{font-size:28px}
+.ghead p{margin:0; color:var(--ink-soft); font-size:16px}
 @media (max-width:980px){ .games{grid-template-columns:1fr} }
 .gcard{display:flex; flex-direction:column; gap:12px}
+.gcard > .btn{margin-top:auto}
 .gcover{border-radius:14px; border:3px solid var(--ink); overflow:hidden; line-height:0}
 .gcover canvas{display:block; width:100%; height:auto; aspect-ratio:640/300}
 .gcover.whack{background:var(--field)} .gcover.jump{background:var(--sky)} .gcover.hide{background:#CDEBC4}
@@ -229,7 +237,8 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
   <section class="view" id="v-hub">
     <h1>무엇을 해 볼까요?</h1>
     <p class="sub">미빗, 미부기, 따봉미부기와 함께하는 미니게임이에요. 게임마다 순위표가 따로 있어요.</p>
-    <div class="games">
+    <div class="ghead"><h2>혼자 하는 게임</h2><p>혼자서 언제든지 기록에 도전해요.</p></div>
+    <div class="games four">
       <article class="panel gcard">
         <div class="gcover whack"><canvas data-cover="whack" role="img" aria-label="캐릭터들이 구멍에서 튀어나오는 두더지 잡기 그림"></canvas></div>
         <h2>두더지 잡기<span class="tag">혼자</span></h2>
@@ -238,18 +247,35 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
         <a class="btn" href="#/whack">하러 가기</a>
       </article>
       <article class="panel gcard">
+        <div class="gcover mjump"><canvas data-cover="mjump" role="img" aria-label="책 발판을 밟고 위로 뛰어오르는 그림"></canvas></div>
+        <h2>미북 점프<span class="tag">혼자</span></h2>
+        <p>책 발판을 밟고 위로, 더 위로! 스페이스바로 슈퍼 점프.</p>
+        <div class="mini"><h3>가장 높이 3명</h3><ol class="rank-list" id="hubMjump"></ol><div class="empty" id="hubMjumpMsg"></div></div>
+        <a class="btn" href="#/mjump">하러 가기</a>
+      </article>
+      <article class="panel gcard">
+        <div class="gcover flight"><canvas data-cover="flight" role="img" aria-label="하늘을 날며 별을 쏘는 그림"></canvas></div>
+        <h2>미북 플라이트<span class="tag">혼자</span></h2>
+        <p>하늘 끝까지 날아가며 별을 쏴요. 위험할 땐 스페이스바로 폭탄!</p>
+        <div class="mini"><h3>점수 상위 3명</h3><ol class="rank-list" id="hubFlight"></ol><div class="empty" id="hubFlightMsg"></div></div>
+        <a class="btn" href="#/flight">하러 가기</a>
+      </article>
+      <article class="panel gcard">
+        <div class="gcover blocks"><canvas data-cover="blocks" role="img" aria-label="블록을 쌓아 줄을 지우는 그림"></canvas></div>
+        <h2>미북 블록 쌓기<span class="tag">혼자</span></h2>
+        <p>떨어지는 블록을 돌리고 맞춰서 줄을 꽉 채워 지워요.</p>
+        <div class="mini"><h3>점수 상위 3명</h3><ol class="rank-list" id="hubBlocks"></ol><div class="empty" id="hubBlocksMsg"></div></div>
+        <a class="btn" href="#/blocks">하러 가기</a>
+      </article>
+    </div>
+    <div class="ghead"><h2>같이 하는 게임</h2><p>방을 만들고 초대 링크로 친구들과 함께해요.</p></div>
+    <div class="games four">
+      <article class="panel gcard">
         <div class="gcover jump"><canvas data-cover="jump" role="img" aria-label="세 캐릭터가 줄을 넘는 그림"></canvas></div>
         <h2>단체줄넘기<span class="tag">협동</span></h2>
         <p>방을 만들고 친구를 초대해요. 다 같이 박자 맞춰 넘고, 한 명이라도 걸리면 끝!</p>
         <div class="mini"><h3>팀 순위 상위 3팀</h3><ol class="rank-list" id="hubJump"></ol><div class="empty" id="hubJumpMsg"></div></div>
         <a class="btn" href="#/jump">하러 가기</a>
-      </article>
-      <article class="panel gcard">
-        <div class="gcover hide"><canvas data-cover="hide" role="img" aria-label="꽃밭에 숨은 따봉미부기와 돋보기 그림"></canvas></div>
-        <h2>숨바꼭질<span class="tag">도전</span></h2>
-        <p>캐릭터를 장면 색으로 칠해서 숨기고, 다른 사람이 숨은 곳도 찾아봐요.</p>
-        <div class="mini"><h3>가장 잘 숨은 3명</h3><ol class="rank-list" id="hubHide"></ol><div class="empty" id="hubHideMsg"></div></div>
-        <a class="btn" href="#/hide">하러 가기</a>
       </article>
       <article class="panel gcard">
         <div class="gcover dodge"><canvas data-cover="dodge" role="img" aria-label="떨어지는 공을 피하는 그림"></canvas></div>
@@ -272,19 +298,15 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
         <div class="mini"><h3>팀 순위 상위 3팀</h3><ol class="rank-list" id="hubSoccer"></ol><div class="empty" id="hubSoccerMsg"></div></div>
         <a class="btn" href="#/soccer">하러 가기</a>
       </article>
+    </div>
+    <div class="ghead"><h2>도전 게임</h2><p>숨고, 다른 사람이 숨은 곳을 찾아요.</p></div>
+    <div class="games four">
       <article class="panel gcard">
-        <div class="gcover mjump"><canvas data-cover="mjump" role="img" aria-label="책 발판을 밟고 위로 뛰어오르는 그림"></canvas></div>
-        <h2>미북 점프<span class="tag">혼자</span></h2>
-        <p>책 발판을 밟고 위로, 더 위로! 스페이스바로 슈퍼 점프.</p>
-        <div class="mini"><h3>가장 높이 3명</h3><ol class="rank-list" id="hubMjump"></ol><div class="empty" id="hubMjumpMsg"></div></div>
-        <a class="btn" href="#/mjump">하러 가기</a>
-      </article>
-      <article class="panel gcard">
-        <div class="gcover flight"><canvas data-cover="flight" role="img" aria-label="하늘을 날며 별을 쏘는 그림"></canvas></div>
-        <h2>미북 플라이트<span class="tag">혼자</span></h2>
-        <p>하늘 끝까지 날아가며 별을 쏴요. 위험할 땐 스페이스바로 폭탄!</p>
-        <div class="mini"><h3>점수 상위 3명</h3><ol class="rank-list" id="hubFlight"></ol><div class="empty" id="hubFlightMsg"></div></div>
-        <a class="btn" href="#/flight">하러 가기</a>
+        <div class="gcover hide"><canvas data-cover="hide" role="img" aria-label="꽃밭에 숨은 따봉미부기와 돋보기 그림"></canvas></div>
+        <h2>숨바꼭질<span class="tag">도전</span></h2>
+        <p>캐릭터를 장면 색으로 칠해서 숨기고, 다른 사람이 숨은 곳도 찾아봐요.</p>
+        <div class="mini"><h3>가장 잘 숨은 3명</h3><ol class="rank-list" id="hubHide"></ol><div class="empty" id="hubHideMsg"></div></div>
+        <a class="btn" href="#/hide">하러 가기</a>
       </article>
     </div>
   </section>
@@ -468,6 +490,7 @@ dialog label{display:flex; flex-direction:column; gap:4px; font-size:15px; color
   <section class="view" id="v-soccer"></section>
   <section class="view" id="v-mjump"></section>
   <section class="view" id="v-flight"></section>
+  <section class="view" id="v-blocks"></section>
 </main>
 
 <dialog id="profileDlg">
@@ -648,6 +671,10 @@ const BOARDS = {
     path: 'scores/flight', order: 'best', empty: '아직 기록이 없어요. 첫 번째로 올라가 보세요!',
     row: v => ({ title: v.name, sub: v.team, value: Number(v.best).toLocaleString(), unit: '점', me: v.name === me.name && v.team === me.team })
   },
+  blocks: {
+    path: 'scores/blocks', order: 'best', empty: '아직 기록이 없어요. 첫 번째로 올라가 보세요!',
+    row: v => ({ title: v.name, sub: v.team, value: Number(v.best).toLocaleString(), unit: '점', me: v.name === me.name && v.team === me.team })
+  },
   hide: {
     path: 'hides', order: 'stats/score', empty: '아직 누가 찾아본 숨바꼭질이 없어요.', over: 3,
     filter: v => v && v.stats && v.stats.tries > 0,
@@ -683,7 +710,7 @@ function watchBoard(game, n, ol, msg) {
 }
 
 // ───────── 화면 이동 ─────────
-const VIEWS = ['hub', 'whack', 'jump', 'hide', 'hidenew', 'seek', 'dodge', 'run', 'soccer', 'mjump', 'flight'];
+const VIEWS = ['hub', 'whack', 'jump', 'hide', 'hidenew', 'seek', 'dodge', 'run', 'soccer', 'mjump', 'flight', 'blocks'];
 let leaveFns = [];
 const onLeave = fn => leaveFns.push(fn);
 function show(v) { VIEWS.forEach(x => $('v-' + x).classList.toggle('on', x === v)); window.scrollTo(0, 0); }
@@ -695,7 +722,7 @@ async function route() {
   if (a === 'whack') { show('whack'); Whack.enter(); }
   else if (a === 'jump') { show('jump'); Jump.enter(b ? b.toUpperCase() : null); }
   else if (a === 'dodge' || a === 'run' || a === 'soccer') { show(a); ({ dodge: Dodge, run: Run, soccer: Soccer })[a].enter(b ? b.toUpperCase() : null); }
-  else if (a === 'mjump' || a === 'flight') { show(a); (a === 'mjump' ? MJump : Flight).enter(); }
+  else if (a === 'mjump' || a === 'flight' || a === 'blocks') { show(a); ({ mjump: MJump, flight: Flight, blocks: Blocks })[a].enter(); }
   else if (a === 'hide' && b === 'new') { show('hidenew'); Maker.enter(); }
   else if (a === 'hide' && b) { show('seek'); Seek.enter(b); }
   else if (a === 'hide') { show('hide'); HideList.enter(); }
@@ -714,6 +741,7 @@ const Hub = {
     onLeave(watchBoard('soccer', 3, $('hubSoccer'), $('hubSoccerMsg')));
     onLeave(watchBoard('mjump', 3, $('hubMjump'), $('hubMjumpMsg')));
     onLeave(watchBoard('flight', 3, $('hubFlight'), $('hubFlightMsg')));
+    onLeave(watchBoard('blocks', 3, $('hubBlocks'), $('hubBlocksMsg')));
   }
 };
 
@@ -2434,7 +2462,7 @@ function makeSoloGame(k, o) {
   $(k + 'Start').addEventListener('click', () => needProfile(start));
   $(k + 'Again').addEventListener('click', start);
   $(k + 'Back').addEventListener('click', () => { S.state = 'idle'; ov('OverOv', false); ov('StartOv', true); });
-  const KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'KeyA', 'KeyD', 'KeyW', 'KeyS'];
+  const KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyZ', 'KeyX', 'KeyC', 'ShiftLeft', 'ShiftRight'];
   addEventListener('keydown', e => {
     if (!S.active || $('profileDlg').open) return;
     const tag = document.activeElement && document.activeElement.tagName;
@@ -2749,6 +2777,221 @@ function mixC(a, b, t) {
   const pa = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16)), pb = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
   return 'rgb(' + pa.map((v, i) => Math.round(v + (pb[i] - v) * clamp(t, 0, 1))).join(',') + ')';
 }
+
+// ═════════════════ 미북 블록 쌓기 ═════════════════
+const BLK = {
+  I: { c: '#5BC0BE', n: 4, s: [[0, 1], [1, 1], [2, 1], [3, 1]] },
+  O: { c: '#FFC531', n: 2, s: [[0, 0], [1, 0], [0, 1], [1, 1]] },
+  T: { c: '#8A6CE0', n: 3, s: [[1, 0], [0, 1], [1, 1], [2, 1]] },
+  S: { c: '#2FB58F', n: 3, s: [[1, 0], [2, 0], [0, 1], [1, 1]] },
+  Z: { c: '#E2465B', n: 3, s: [[0, 0], [1, 0], [1, 1], [2, 1]] },
+  J: { c: '#3B5BDB', n: 3, s: [[0, 0], [0, 1], [1, 1], [2, 1]] },
+  L: { c: '#F4A259', n: 3, s: [[2, 0], [0, 1], [1, 1], [2, 1]] }
+};
+function drawBlock(c, x, y, s, col, alpha) {
+  c.save(); if (alpha != null) c.globalAlpha = alpha;
+  c.fillStyle = col; c.beginPath(); if (c.roundRect) c.roundRect(x + 1, y + 1, s - 2, s - 2, s * 0.18); else c.rect(x + 1, y + 1, s - 2, s - 2); c.fill();
+  c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(x + s * 0.18, y + s * 0.14, s * 0.64, s * 0.14);
+  c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(x + s * 0.12, y + s * 0.78, s * 0.76, s * 0.1);
+  c.restore();
+}
+const Blocks = makeSoloGame('blocks', {
+  title: '미북 블록 쌓기', W: 480, H: 720, maxW: 480,
+  desc: '떨어지는 블록을 돌리고 맞춰서 한 줄을 꽉 채우면 사라져요. 여러 줄을 한 번에 지울수록 점수가 커져요.',
+  intro: '← → 이동, ↑ 회전, ↓ 천천히, 스페이스바로 바로 내리기!',
+  rules: '<b>조작</b> ← → 이동, ↑ 또는 X 오른쪽 회전, Z 왼쪽 회전, ↓ 빠르게 내리기, 스페이스바 바로 내리기, C 또는 Shift 보관하기.<br>' +
+    '<b>마우스</b> 판의 왼쪽을 누르면 왼쪽, 오른쪽을 누르면 오른쪽, 가운데를 누르면 회전해요.<br>' +
+    '<b>점수</b> 한 번에 1줄 100, 2줄 300, 3줄 500, 4줄 800점에 레벨을 곱해요. 10줄마다 레벨이 오르고 빨라져요. <b>P</b> 일시정지, <b>F</b> 전체 화면',
+  boardTitle: '점수 순위', boardSub: '한 판에 가장 높은 점수예요.',
+  fmt: s => s.toLocaleString() + '점', minScore: 1,
+  game: {
+    CW: 10, CH: 20, S: 30, BX: 18, BY: 66,
+    reset(ch) {
+      this.ch = ch; this.grid = Array.from({ length: this.CH }, () => Array(this.CW).fill(null));
+      this.bag = []; this.queue = []; this.hold = null; this.canHold = true;
+      this.pts = 0; this.lines = 0; this.level = 1; this.dead = false; this.drop = 0; this.lock = 0; this.lockMoves = 0;
+      this.clearing = null; this.pop = null; this.held = {}; this.cheer = 0;
+      this.spawn();
+    },
+    next() { if (!this.bag.length) { this.bag = Object.keys(BLK); for (let i = this.bag.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [this.bag[i], this.bag[j]] = [this.bag[j], this.bag[i]]; } } return this.bag.pop(); },
+    spawn(type) {
+      while (this.queue.length < 4) this.queue.push(this.next());
+      const t = type || this.queue.shift();
+      const b = BLK[t];
+      this.cur = { t, cells: b.s.map(p => p.slice()), x: Math.floor((this.CW - b.n) / 2), y: t === 'I' ? -1 : 0 };
+      this.lock = 0; this.lockMoves = 0; this.drop = 0;
+      if (this.hit(this.cur.cells, this.cur.x, this.cur.y)) this.dead = true;
+    },
+    hit(cells, x, y) {
+      for (const [cx, cy] of cells) {
+        const gx = cx + x, gy = cy + y;
+        if (gx < 0 || gx >= this.CW || gy >= this.CH) return true;
+        if (gy >= 0 && this.grid[gy][gx]) return true;
+      }
+      return false;
+    },
+    move(dx, dy) {
+      const c = this.cur; if (!c || this.clearing) return false;
+      if (this.hit(c.cells, c.x + dx, c.y + dy)) return false;
+      c.x += dx; c.y += dy;
+      if (dx && this.lock > 0 && this.lockMoves < 15) { this.lock = 0; this.lockMoves++; }
+      return true;
+    },
+    rotate(dir) {
+      const c = this.cur; if (!c || c.t === 'O' || this.clearing) return;
+      const n = BLK[c.t].n;
+      const rc = c.cells.map(([x, y]) => dir > 0 ? [n - 1 - y, x] : [y, n - 1 - x]);
+      for (const [kx, ky] of [[0, 0], [-1, 0], [1, 0], [0, -1], [-2, 0], [2, 0], [0, 1]]) {
+        if (!this.hit(rc, c.x + kx, c.y + ky)) { c.cells = rc; c.x += kx; c.y += ky; if (this.lock > 0 && this.lockMoves < 15) { this.lock = 0; this.lockMoves++; } return; }
+      }
+    },
+    ghostY() { const c = this.cur; let y = c.y; while (!this.hit(c.cells, c.x, y + 1)) y++; return y; },
+    place() {
+      const c = this.cur;
+      for (const [cx, cy] of c.cells) { const gy = cy + c.y; if (gy < 0) { this.dead = true; return; } this.grid[gy][cx + c.x] = BLK[c.t].c; }
+      this.cur = null; this.canHold = true;
+      const full = []; this.grid.forEach((row, i) => { if (row.every(v => v)) full.push(i); });
+      if (full.length) {
+        this.clearing = { rows: full, t: 0.28 };
+        this.lines += full.length;
+        this.pts += [0, 100, 300, 500, 800][full.length] * this.level;
+        this.pop = { text: ['', '한 줄!', '두 줄!', '세 줄!', '네 줄! 최고!'][full.length], t: 1.2 };
+        this.cheer = 0.8;
+        const nl = 1 + Math.floor(this.lines / 10);
+        if (nl > this.level) { this.level = nl; this.pop = { text: '레벨 ' + nl + '!', t: 1.4 }; }
+      } else this.spawn();
+    },
+    hardDrop() { if (!this.cur || this.clearing) return; const y = this.ghostY(); this.pts += (y - this.cur.y) * 2; this.cur.y = y; this.place(); },
+    doHold() {
+      if (!this.canHold || !this.cur || this.clearing) return;
+      const t = this.cur.t; this.canHold = false;
+      if (this.hold) { const h = this.hold; this.hold = t; this.spawn(h); } else { this.hold = t; this.spawn(); }
+      this.canHold = false;
+    },
+    press(code) {
+      if (this.dead) return;
+      if (code === 'ArrowLeft' || code === 'KeyA') { this.move(-1, 0); this.held.L = 0; }
+      else if (code === 'ArrowRight' || code === 'KeyD') { this.move(1, 0); this.held.R = 0; }
+      else if (code === 'ArrowUp' || code === 'KeyX' || code === 'KeyW') this.rotate(1);
+      else if (code === 'KeyZ') this.rotate(-1);
+      else if (code === 'Space') this.hardDrop();
+      else if (code === 'KeyC' || code === 'ShiftLeft' || code === 'ShiftRight') this.doHold();
+    },
+    tap(p) {
+      const bx = (p.x - this.BX) / (this.CW * this.S);
+      if (bx < 0 || bx > 1 || p.y < this.BY || p.y > this.BY + this.CH * this.S) return;
+      if (bx < 0.33) this.move(-1, 0); else if (bx > 0.67) this.move(1, 0); else this.rotate(1);
+    },
+    update(dt, api) {
+      if (this.pop) { this.pop.t -= dt; if (this.pop.t <= 0) this.pop = null; }
+      this.cheer = Math.max(0, this.cheer - dt);
+      if (this.clearing) {
+        this.clearing.t -= dt;
+        if (this.clearing.t <= 0) {
+          const rows = this.clearing.rows;
+          this.grid = this.grid.filter((r, i) => !rows.includes(i));
+          while (this.grid.length < this.CH) this.grid.unshift(Array(this.CW).fill(null));
+          this.clearing = null; this.spawn();
+        }
+        return;
+      }
+      if (!this.cur) return;
+      // 길게 누르면 계속 이동
+      const rep = (k, on, dx) => {
+        if (!on) { this.held[k] = null; return; }
+        if (this.held[k] == null) this.held[k] = 0;
+        this.held[k] += dt;
+        while (this.held[k] > 0.17) { this.move(dx, 0); this.held[k] -= 0.05; }
+      };
+      rep('L', api.key('ArrowLeft') || api.key('KeyA'), -1);
+      rep('R', api.key('ArrowRight') || api.key('KeyD'), 1);
+      const soft = api.key('ArrowDown') || api.key('KeyS');
+      const gInt = soft ? 0.04 : Math.max(0.05, 0.8 * Math.pow(0.85, this.level - 1));
+      this.drop += dt;
+      while (this.drop >= gInt && this.cur) {
+        this.drop -= gInt;
+        if (this.move(0, 1)) { if (soft) this.pts += 1; this.lock = 0; }
+        else break;
+      }
+      if (this.cur && this.hit(this.cur.cells, this.cur.x, this.cur.y + 1)) {
+        this.lock += dt;
+        if (this.lock > 0.5) this.place();
+      }
+    },
+    isOver() { return this.dead; },
+    score() { return this.pts; },
+    overText() { return this.lines + '줄 지우고 레벨 ' + this.level + '까지 갔어요'; },
+    mini(c, t, x, y, s) {
+      if (!t) return;
+      const b = BLK[t], xs = b.s.map(p => p[0]), ys = b.s.map(p => p[1]);
+      const w = (Math.max(...xs) - Math.min(...xs) + 1) * s, h = (Math.max(...ys) - Math.min(...ys) + 1) * s;
+      b.s.forEach(([cx, cy]) => drawBlock(c, x - w / 2 + (cx - Math.min(...xs)) * s, y - h / 2 + (cy - Math.min(...ys)) * s, s, b.c));
+    },
+    draw(c, api, state) {
+      const S = this.S, BX = this.BX, BY = this.BY;
+      const g = c.createLinearGradient(0, 0, 0, 720); g.addColorStop(0, '#2B2F77'); g.addColorStop(1, '#1A1D45');
+      c.fillStyle = g; c.fillRect(0, 0, 480, 720);
+      bigText(c, this.pts.toLocaleString(), 170, 48, 34);
+      // 판
+      c.fillStyle = '#12153A'; c.fillRect(BX - 4, BY - 4, this.CW * S + 8, this.CH * S + 8);
+      c.strokeStyle = 'rgba(255,255,255,.06)'; c.lineWidth = 1;
+      for (let i = 0; i <= this.CW; i++) { c.beginPath(); c.moveTo(BX + i * S + 0.5, BY); c.lineTo(BX + i * S + 0.5, BY + this.CH * S); c.stroke(); }
+      for (let j = 0; j <= this.CH; j++) { c.beginPath(); c.moveTo(BX, BY + j * S + 0.5); c.lineTo(BX + this.CW * S, BY + j * S + 0.5); c.stroke(); }
+      this.grid.forEach((row, y) => row.forEach((col, x) => {
+        if (!col) return;
+        const flash = this.clearing && this.clearing.rows.includes(y);
+        drawBlock(c, BX + x * S, BY + y * S, S, flash ? '#FFFFFF' : col, flash ? 0.5 + Math.sin(performance.now() / 40) * 0.4 : 1);
+      }));
+      if (this.cur && state !== 'idle') {
+        const gy = this.ghostY(), col = BLK[this.cur.t].c;
+        this.cur.cells.forEach(([cx, cy]) => {
+          const yy = cy + gy; if (yy < 0) return;
+          c.strokeStyle = col; c.globalAlpha = 0.5; c.lineWidth = 2; c.strokeRect(BX + (cx + this.cur.x) * S + 3, BY + yy * S + 3, S - 6, S - 6); c.globalAlpha = 1;
+        });
+        this.cur.cells.forEach(([cx, cy]) => { const yy = cy + this.cur.y; if (yy >= 0) drawBlock(c, BX + (cx + this.cur.x) * S, BY + yy * S, S, col); });
+      }
+      c.strokeStyle = '#FFFFFF'; c.lineWidth = 3; c.strokeRect(BX - 4, BY - 4, this.CW * S + 8, this.CH * S + 8);
+      // 옆 칸
+      const PX = 344, PW = 122;
+      const box = (y, h, label) => {
+        c.fillStyle = 'rgba(255,255,255,.08)'; c.beginPath(); if (c.roundRect) c.roundRect(PX, y, PW, h, 10); else c.rect(PX, y, PW, h); c.fill();
+        c.font = '16px ' + FONT; c.textAlign = 'center'; c.fillStyle = '#C9C4F5'; c.fillText(label, PX + PW / 2, y + 22);
+      };
+      box(62, 200, '다음');
+      this.queue.slice(0, 3).forEach((t, i) => this.mini(c, t, PX + PW / 2, 62 + 58 + i * 56, i === 0 ? 22 : 16));
+      box(272, 96, '보관 (C)');
+      c.save(); if (!this.canHold) c.globalAlpha = 0.4; this.mini(c, this.hold, PX + PW / 2, 272 + 58, 20); c.restore();
+      box(378, 128, '기록');
+      c.textAlign = 'center'; c.fillStyle = '#FFFFFF'; c.font = '20px ' + FONT;
+      c.fillText('레벨 ' + this.level, PX + PW / 2, 378 + 58); c.fillText(this.lines + '줄', PX + PW / 2, 378 + 92);
+      // 응원하는 캐릭터
+      const im = IM[this.ch] || IM.mibit, h = 120, w = h * im.naturalWidth / im.naturalHeight;
+      const jump = this.cheer > 0 ? Math.sin((0.8 - this.cheer) / 0.8 * Math.PI) * 40 : Math.sin(performance.now() / 500) * 3;
+      c.drawImage(im, PX + PW / 2 - w / 2, 700 - h - jump, w, h);
+      if (this.pop) { c.save(); c.globalAlpha = Math.min(1, this.pop.t * 2); bigText(c, this.pop.text, BX + this.CW * S / 2, 340, 42, '#FFC531'); c.restore(); }
+    }
+  }
+});
+COVERS.blocks = function (c) {
+  const g = c.createLinearGradient(0, 0, 0, COVER_H); g.addColorStop(0, '#2B2F77'); g.addColorStop(1, '#1A1D45');
+  c.fillStyle = g; c.fillRect(0, 0, COVER_W, COVER_H);
+  const S = 30, rows = [
+    'ZZ  TTT  LL..IIII',
+    '.ZZ  T  .L..OO...',
+    'SS JJJ  .L..OO.JJ',
+    '.SS..J...SS.TTT.J',
+    'LLLIIIIOOJJJZZ.TS'
+  ];
+  const col = { I: BLK.I.c, O: BLK.O.c, T: BLK.T.c, S: BLK.S.c, Z: BLK.Z.c, J: BLK.J.c, L: BLK.L.c };
+  const x0 = 60;
+  rows.slice(2).forEach((r, j) => [...r].forEach((ch, i) => { if (col[ch]) drawBlock(c, x0 + i * S, 300 - (3 - j) * S, S, col[ch]); }));
+  // 떨어지는 T 블록과 사라지는 줄
+  [[1, 0], [0, 1], [1, 1], [2, 1]].forEach(([x, y]) => drawBlock(c, 300 + x * S, 50 + y * S, S, BLK.T.c));
+  c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 4; c.setLineDash([6, 10]); c.beginPath(); c.moveTo(345, 115); c.lineTo(345, 185); c.stroke(); c.setLineDash([]);
+  c.fillStyle = 'rgba(255,255,255,.55)'; c.fillRect(x0, 300 - S, 17 * S, S);
+  coverChar(c, 'ddabong', 110, 212, 120, -0.1);
+  popText(c, '한 줄 삭제!', 470, 60, 40, '#FFC531', 0.06);
+};
 
 route();
 </script>
