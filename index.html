@@ -213,6 +213,18 @@ input[type=range]{width:100%; accent-color:var(--ink)}
 .timer{position:absolute; top:12px; right:14px; background:var(--surface); border:3px solid var(--ink); border-radius:12px; padding:4px 12px; font-size:22px; pointer-events:none}
 .timer.warn{color:var(--bad)}
 
+/* 모바일 화면 버튼 */
+.pad{display:none; flex-direction:column; gap:10px; margin:16px auto 0; max-width:520px; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none}
+@media (hover:none), (pointer:coarse), (max-width:760px){ .pad{display:flex} }
+body.touch .pad, body.show-pad .pad{display:flex}
+body.hide-pad .pad{display:none}
+.padrow{display:flex; gap:10px; align-items:center}
+.padbtn{flex:1; min-height:64px; font:inherit; font-size:clamp(15px,4.4vw,21px); white-space:nowrap; padding:0 6px; color:var(--ink); background:var(--surface); border:3px solid var(--ink); border-radius:16px; box-shadow:0 4px 0 var(--ink); touch-action:none; cursor:pointer; -webkit-tap-highlight-color:transparent}
+.padbtn.on{transform:translateY(3px); box-shadow:0 1px 0 var(--ink); background:var(--accent); color:#26206B}
+.padbtn.big{flex:1.5; background:var(--accent); color:#26206B}
+.stick{position:relative; width:136px; height:136px; border-radius:50%; background:var(--surface); border:3px solid var(--ink); touch-action:none; flex:none; box-shadow:0 4px 0 var(--ink)}
+.knob{position:absolute; left:50%; top:50%; width:56px; height:56px; margin:-28px 0 0 -28px; border-radius:50%; background:var(--ink); pointer-events:none}
+.padtoggle{display:block; margin:10px auto 0; font:inherit; font-size:14px; color:var(--ink-soft); background:none; border:0; cursor:pointer; text-decoration:underline}
 dialog{border:3px solid var(--ink); border-radius:20px; padding:22px; background:var(--surface); color:var(--ink); box-shadow:7px 7px 0 var(--ink); max-width:420px; width:calc(100% - 40px)}
 dialog::backdrop{background:rgba(20,18,44,.45)}
 dialog h2{font-size:26px; margin-bottom:6px}
@@ -1626,6 +1638,60 @@ const Seek = (() => {
   };
 })();
 
+// ───────── 모바일 화면 버튼 ─────────
+function fireKey(type, code) { dispatchEvent(new KeyboardEvent(type, { code, key: code === 'Space' ? ' ' : code, bubbles: true })); }
+function makeStick() {
+  const w = el('div', 'stick'), k = el('div', 'knob'); w.appendChild(k);
+  let cur = new Set();
+  const setKeys = nx => { for (const c of cur) if (!nx.has(c)) fireKey('keyup', c); for (const c of nx) if (!cur.has(c)) fireKey('keydown', c); cur = nx; };
+  const upd = e => {
+    const r = w.getBoundingClientRect(), R = r.width / 2;
+    let dx = e.clientX - r.left - R, dy = e.clientY - r.top - R; const d = Math.hypot(dx, dy);
+    if (d > R) { dx *= R / d; dy *= R / d; }
+    k.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    const t = R * 0.35, s = new Set();
+    if (dx > t) s.add('ArrowRight'); if (dx < -t) s.add('ArrowLeft'); if (dy > t) s.add('ArrowDown'); if (dy < -t) s.add('ArrowUp');
+    setKeys(s);
+  };
+  const end = () => { k.style.transform = ''; setKeys(new Set()); };
+  w.addEventListener('pointerdown', e => { e.preventDefault(); w.setPointerCapture(e.pointerId); upd(e); });
+  w.addEventListener('pointermove', e => { if (w.hasPointerCapture(e.pointerId)) upd(e); });
+  w.addEventListener('pointerup', end); w.addEventListener('pointercancel', end); w.addEventListener('lostpointercapture', end);
+  w.addEventListener('contextmenu', e => e.preventDefault());
+  return w;
+}
+function applyPadPref() {
+  let p = ''; try { p = localStorage.getItem('mg-pad') || ''; } catch (e) {}
+  document.body.classList.toggle('show-pad', p === 'on'); document.body.classList.toggle('hide-pad', p === 'off');
+}
+function buildPad(anchor, rows) {
+  const pad = el('div', 'pad');
+  rows.forEach(row => {
+    const r = el('div', 'padrow');
+    row.forEach(it => {
+      if (it.stick) { r.appendChild(makeStick()); return; }
+      const b = el('button', 'padbtn' + (it.cls ? ' ' + it.cls : ''), it.label); b.type = 'button'; b.tabIndex = -1;
+      let down = false;
+      const off = () => { if (!down) return; down = false; b.classList.remove('on'); fireKey('keyup', it.code); };
+      b.addEventListener('pointerdown', e => { e.preventDefault(); b.setPointerCapture(e.pointerId); if (down) return; down = true; b.classList.add('on'); fireKey('keydown', it.code); });
+      b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+      b.addEventListener('contextmenu', e => e.preventDefault());
+      r.appendChild(b);
+    });
+    pad.appendChild(r);
+  });
+  const tg = el('button', 'padtoggle', '화면 버튼 켜기 / 끄기'); tg.type = 'button';
+  tg.addEventListener('click', () => {
+    const shown = getComputedStyle(pad).display !== 'none';
+    try { localStorage.setItem('mg-pad', shown ? 'off' : 'on'); } catch (e) {}
+    applyPadPref();
+  });
+  anchor.after(pad); pad.after(tg);
+  return pad;
+}
+applyPadPref();
+addEventListener('pointerdown', e => { if (e.pointerType === 'touch') document.body.classList.add('touch'); }, { capture: true, passive: true });
+
 // ═════════════════ 같이 하는 방 게임: 공통 ═════════════════
 const FONT = '"Jua", "Malgun Gothic", sans-serif';
 function drawCharAt(c, key, cx, bottom, h, o = {}) {
@@ -1680,6 +1746,7 @@ function makeRoomGame(k, o) {
 
   const cv = $(k + 'Cv'), ctx = cv.getContext('2d');
   cv.style.aspectRatio = o.W + '/' + o.H;
+  if (o.pad) buildPad(cv.parentElement, o.pad);
   let dpr = 1;
   const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); cv.width = o.W * dpr; cv.height = o.H * dpr; };
   size(); addEventListener('resize', size);
@@ -1870,6 +1937,7 @@ function makeRoomGame(k, o) {
 const DODGE_PAL = ['#E2465B', '#5C7CFA', '#FFC531', '#2FB58F', '#8A6CE0', '#FF8FB8', '#F4A259'];
 const Dodge = makeRoomGame('dodge', {
   title: '공 피하기', W: 960, H: 480, bg: '#DCEBFF',
+  pad: [[{ label: '◀', code: 'ArrowLeft' }, { label: '▶', code: 'ArrowRight' }]],
   desc: '하늘에서 떨어지는 공을 피해서 끝까지 살아남아요. 다 같이 같은 공을 보고, 마지막까지 버틴 사람이 1등!',
   createHelp: '방을 만들고 초대 링크를 보내요. 혼자 해도 기록은 순위에 올라가요.',
   hint: '← → 키(또는 A, D)로 움직여요. 화면을 누른 채 끌어도 움직여요.',
@@ -1964,6 +2032,7 @@ const Dodge = makeRoomGame('dodge', {
 // ═════════════════ 달리기 ═════════════════
 const Run = makeRoomGame('run', {
   title: '달리기', W: 960, H: 420, bg: '#BFDDFF',
+  pad: [[{ label: '◀ 왼발', code: 'ArrowLeft' }, { label: '오른발 ▶', code: 'ArrowRight' }, { label: '점프', code: 'Space', cls: 'big' }]],
   desc: '다 같이 출발선에 서서 결승선까지 달려요. ← → 키를 번갈아 빠르게 누를수록 빨라지고, 허들은 스페이스바로 넘어요.',
   createHelp: '방을 만들고 초대 링크를 보내요. 혼자 달려도 기록은 순위에 올라가요.',
   hint: '← → 를 번갈아 연타! 허들 앞에서는 스페이스바로 점프해요.',
@@ -2077,6 +2146,7 @@ const Run = makeRoomGame('run', {
 // ═════════════════ 축구 ═════════════════
 const Soccer = makeRoomGame('soccer', {
   title: '협동 축구', W: 960, H: 540, bg: '#5DAA4F', team: true,
+  pad: [[{ stick: true }, { label: '⚽ 슛', code: 'Space', cls: 'big' }]],
   desc: '다 같이 한 팀이 되어 90초 동안 폭탄 골키퍼와 수비수를 뚫고 골을 넣어요. 골을 넣을수록 상대가 강해져요.',
   createHelp: '팀 이름은 순위표에 올라가요. 2명 이상 함께 해야 기록돼요.',
   hint: '방향키(또는 WASD)로 움직이고, 공 가까이에서 스페이스바로 차요!',
@@ -2410,6 +2480,7 @@ function makeSoloGame(k, o) {
     '</div>' +
     '<aside class="panel board"><h2>' + o.boardTitle + '</h2><p class="bsub">' + o.boardSub + '</p><ol class="rank-list" id="' + k + 'Board"></ol><div class="empty" id="' + k + 'BoardMsg"></div></aside></div>';
   const cv = $(k + 'Cv'), ctx = cv.getContext('2d'), G = o.game;
+  if (o.pad) buildPad($(k + 'Box'), o.pad);
   let dpr = 1;
   const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); cv.width = o.W * dpr; cv.height = o.H * dpr; };
   size(); addEventListener('resize', size);
@@ -2488,6 +2559,7 @@ function makeSoloGame(k, o) {
 // ═════════════════ 미북 점프 ═════════════════
 const MJump = makeSoloGame('mjump', {
   title: '미북 점프', W: 480, H: 720, maxW: 480,
+  pad: [[{ label: '◀', code: 'ArrowLeft' }, { label: '★ 슈퍼 점프', code: 'Space', cls: 'big' }, { label: '▶', code: 'ArrowRight' }]],
   desc: '책 발판을 밟고 위로, 더 위로! 얼마나 높이 올라갈 수 있을까요?',
   intro: '← →로 움직이고, 스페이스바로 슈퍼 점프!',
   rules: '<b>조작</b> ← → 또는 A, D로 좌우로 움직여요. 마우스나 손가락으로 화면을 누른 쪽으로도 움직여요. 화면 밖으로 나가면 반대편에서 나와요.<br>' +
@@ -2619,6 +2691,7 @@ const MJump = makeSoloGame('mjump', {
 // ═════════════════ 미북 플라이트 ═════════════════
 const Flight = makeSoloGame('flight', {
   title: '미북 플라이트', W: 480, H: 720, maxW: 480,
+  pad: [[{ label: '💣 폭탄 쓰기', code: 'Space', cls: 'big' }]],
   desc: '하늘 끝까지 날아가요! 별을 쏴서 폭탄과 숙제 책을 물리치고, 위험할 땐 스페이스바로 한 방에 정리해요.',
   intro: '방향키나 마우스로 움직이면 별이 자동으로 나가요. 스페이스바는 폭탄!',
   rules: '<b>조작</b> 방향키 또는 W A S D로 움직여요. 마우스나 손가락으로 끌어도 따라와요. 별은 자동으로 쏴요.<br>' +
@@ -2789,6 +2862,7 @@ function drawBlock(c, x, y, s, col, alpha) {
 }
 const Blocks = makeSoloGame('blocks', {
   title: '미북 블록 쌓기', W: 480, H: 720, maxW: 480,
+  pad: [[{ label: '◀', code: 'ArrowLeft' }, { label: '↻ 회전', code: 'ArrowUp' }, { label: '▶', code: 'ArrowRight' }], [{ label: '보관', code: 'KeyC' }, { label: '▼ 빠르게', code: 'ArrowDown' }, { label: '⤓ 바로', code: 'Space', cls: 'big' }]],
   desc: '떨어지는 블록을 돌리고 맞춰서 한 줄을 꽉 채우면 사라져요. 여러 줄을 한 번에 지울수록 점수가 커져요.',
   intro: '← → 이동, ↑ 회전, ↓ 천천히, 스페이스바로 바로 내리기!',
   rules: '<b>조작</b> ← → 이동, ↑ 또는 X 오른쪽 회전, Z 왼쪽 회전, ↓ 빠르게 내리기, 스페이스바 바로 내리기, C 또는 Shift 보관하기.<br>' +
